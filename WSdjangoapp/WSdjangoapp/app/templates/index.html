@@ -1,0 +1,272 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>WS - Web App - First work</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+
+    <!-- Custom fonts for this template -->
+    <link href="{% static 'vendor/font-awesome/css/font-awesome.min.css'%}" rel="stylesheet" type="text/css">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Merriweather:400,300,300italic,400italic,700,700italic,900,900italic' rel='stylesheet' type='text/css'>
+
+    <!-- Plugin CSS -->
+    <link href="{% static 'vendor/magnific-popup/magnific-popup.css'%}" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="{% static 'css/creative.min.css'%}" rel="stylesheet">
+
+</head>
+
+<body id="page-top">
+
+<!-- Navigation -->
+<nav class="navbar navbar-expand-lg navbar-light fixed-top" id="mainNav">
+    <div class="container">
+        <a class="navbar-brand js-scroll-trigger" href="#page-top">Web semântica</a>
+        <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarResponsive">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link js-scroll-trigger" href="#about">Filtrar tuplos</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link js-scroll-trigger" href="#services">Adicionar/Remover</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link js-scroll-trigger" href="#portfolio">Inferências</a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link js-scroll-trigger" href="#contact">Contact</a>
+                </li>
+                <li>
+                    <form action="/downloadgraphvis/" method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-secondary">Download graph</button>
+                    </form>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<header class="masthead text-center text-white d-flex">
+    <div class="container my-auto">
+        <div class="row">
+            <div class="col-lg-10 mx-auto">
+                <h1 class="text-uppercase">
+                    <strong>Django Web App - Triplestore Interface </strong>
+                </h1>
+                <hr>
+            </div>
+            <div class="col-lg-8 mx-auto">
+                <p class="text-faded mb-5">Simple example of web application in django. It provides a set of operations to manipulate a triplestore of certain dataset</p>
+                <a class="btn btn-primary btn-xl js-scroll-trigger" href="#about">Find Out More</a>
+            </div>
+        </div>
+    </div>
+</header>
+
+<section class="bg-primary" id="about1">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto text-center" id="about">
+                <h2 class="section-heading text-white">Lista e filtragem de triplos</h2>
+                <hr class="light my-4">
+
+                <div class="container" >
+                    <div class="row">
+
+                        <div class = "container">
+                            <form action="/sendinfo/" method="post">
+                                {% csrf_token %}
+                                <div class="form-group">
+                                    <label for="exampleInputEmail1">Insira clausulas</label>
+
+                                    <input type="text" name ="c1" class="form-control" placeholder="(?x,?y,?z) (?x,age,?z) ...">
+                                    {% if error %}
+                                        <p style="color: red">Insira uma clausula válida</p>
+                                    {% endif %}
+                                </div>
+                                <button type="submit" class="btn btn-light btn-xl js-scroll-trigger">Query</button>
+                            </form>
+
+                        </div>
+                        <div class="container" style="width:620px; height:320px; overflow:auto">
+                            <table class="table table-fixed">
+                                <thead>
+                                <tr>
+                                    {% if not errorsend %}
+
+                                    <th class="col-xs-3">Sujeito</th>
+                                    <th class="col-xs-3">Predicado</th>
+                                    <th class="col-xs-6">Objeto</th>
+
+                                    {% endif %}
+                                </tr>
+                            </thead>
+                                <tbody>
+                                {% if not errorsend %}
+
+                                    {% for el in tuples %}
+
+                                      <tr>
+                                                <td class="col-xs-3">{{ el}}</td>
+                                        </tr>
+
+                                    {% endfor %}
+
+                                {% endif %}
+                                <br/>
+
+
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+                </div>
+
+
+                <br/>
+                <a class="btn btn-light btn-xl js-scroll-trigger" href="#services">Adicionar triplos</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="services1">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 text-center" id="services">
+                <h2 class="section-heading">Adicionar triplos</h2>
+                <hr class="my-4">
+            </div>
+            <div class = "container">
+                <form action="/addtriple/" method="post">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="exampleInputEmail1">Insira os campos</label>
+
+                        <input type="text" name ="sub" class="form-control" placeholder="Enter subject">
+                        <input type="text" name ="pred" class="form-control" placeholder="Enter predicate">
+                        <input type="text" name ="obj" class="form-control" placeholder="Enter object">
+                        {% if erroradd == True %}
+                            <p style="color: red">Formato de triplo errado</p>
+                        {% elif erroradd == False %}
+                            <p style="color: green">Tuplo adicionado</p>
+                        {% endif %}
+                    </div>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
+
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12 text-center">
+                <h2 class="section-heading">Remover triplos</h2>
+                <hr class="my-4">
+            </div>
+            <div class = "container">
+                <form action="/rmtriple/" method="post">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="exampleInputEmail1">Insira os campos</label>
+
+                        <input type="text" name ="sub" class="form-control" placeholder="Enter subject">
+                        <input type="text" name ="pred" class="form-control" placeholder="Enter predicate">
+                        <input type="text" name ="obj" class="form-control" placeholder="Enter object">
+                        {% if errorrm == True %}
+                            <p style="color: red">Formato de triplo errado</p>
+                        {% elif errorrm == False %}
+                            <p style="color: green">Tuplo removido</p>
+                        {% endif %}
+                    </div>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="p-0" id="portfolio">
+    <div class="text-center">
+        <div class="col-lg-12 text-center">
+            <h2 class="section-heading">Inferências</h2>
+            <hr class="my-4">
+        </div>
+        <div class="btn-group" role="group" aria-label="Basic example">
+
+            <form action="/inferenciarisco/" method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-secondary center-block">Infrência Risco</button>
+            </form>
+
+            <form action="/inferenciainfeliz/" method="post">
+                {% csrf_token %}
+                <button id="button2" type="submit" class="btn btn-secondary center-block">Inferência Infeliz</button>
+            </form>
+            <form action="/inferenciarelacao/" method="post">
+                {% csrf_token %}
+                <button id="button3" type="submit" class="btn btn-secondary center-block">Inferência Tinder</button>
+            </form>
+        </div>
+    </div>
+
+</section>
+
+
+<section id="contact">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto text-center">
+                <h2 class="section-heading">Let's Get In Touch!</h2>
+                <hr class="my-4">
+                <p class="mb-5">Ready to start your next project with us? That's great! Give us a call or send us an email and we will get back to you as soon as possible!</p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-4 ml-auto text-center">
+                <i class="fa fa-envelope-o fa-3x mb-3 sr-contact"></i>
+                <p>
+                    <a href="mailto:your-email@your-domain.com">gil.mesquita@ua.pt</a>
+                </p>
+            </div>
+            <div class="col-lg-4 mr-auto text-center">
+                <i class="fa fa-envelope-o fa-3x mb-3 sr-contact"></i>
+                <p>
+                    <a href="mailto:your-email@your-domain.com">david.jorge@ua.pt</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Bootstrap core JavaScript -->
+<script src="{% static 'vendor/jquery/jquery.min.js'%}"></script>
+<script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js'%}"></script>
+
+<!-- Plugin JavaScript -->
+<script src="{% static 'vendor/jquery-easing/jquery.easing.min.js'%}"></script>
+<script src="{% static 'vendor/scrollreveal/scrollreveal.min.js'%}"></script>
+<script src="{% static 'vendor/magnific-popup/jquery.magnific-popup.min.js'%}"></script>
+
+<!-- Custom scripts for this template -->
+<script src="{% static 'js/creative.min.js'%}"></script>
+
+</body>
+
+</html>
