@@ -4,11 +4,19 @@ from graphviz import Source
 import pandas as pd
 from app.staticvars.staticpaths import pathtocsv
 import re
+import json
+from s4api.graphdb_api import GraphDBApi
+from s4api.swagger import ApiClient
+
+endpoint = "http://localhost:7200"
+repo_name = "trabalho2"
+client = ApiClient(endpoint=endpoint)
+accessor = GraphDBApi(client)
 
 relations = []
 triples = []
 pathtocsv= pathtocsv
-
+"""
 def maketriples(filepath):
     counter = 1
     csvfile = pd.read_csv(filepath)
@@ -21,14 +29,15 @@ def maketriples(filepath):
             triples.append((counter, relation, value))
             counter += 1
         counter = 1
-    return triples
+    return triples"""
 
 graph = Grafo()
-triples=maketriples(pathtocsv)
+#triples=maketriples(pathtocsv)
 
 
-for triple in triples:
-    graph.add(triple[0],triple[1],triple[2])
+#for triple in triples:
+
+#graph.add(triple[0],triple[1],triple[2])
 
 def triples2dot(triples):
     dot = \

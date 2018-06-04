@@ -106,7 +106,7 @@
                         </div>
                         <div class="container" style="width:620px; height:320px; overflow:auto">
                             <table class="table table-fixed">
-                                <!-- <thead>
+                                <thead>
                                 <tr>
                                     {% if not errorsend %}
 
@@ -116,22 +116,16 @@
 
                                     {% endif %}
                                 </tr>
-                            </thead>-->
+                            </thead>
                                 <tbody>
-                                {% if not errorsend %}
-                                    {% for el in tuples %}
+                                    {% for sub, pred, obj in triples %}
                                         <tr>
-                                            {% for k,v in el.items %}
-
-                                                <td class="col-xs-3">{{ v }}</td>
-                                            {% endfor %}
+                                            <td>{{ sub }}</td>
+                                            <td>{{ pred }}</td>
+                                            <td>{{ obj }}</td>
                                         </tr>
                                     {% endfor %}
-                                {% endif %}
-                                <br/>
-
-
-                                </tbody>
+                                    </tbody>
                             </table>
                         </div>
 
