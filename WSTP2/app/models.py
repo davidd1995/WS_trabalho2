@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-from app.grafo import Grafo #Triplestore
-from app.staticvars.staticpaths import pathtocsv #String path to CSV file
 import json
 from s4api.graphdb_api import GraphDBApi
 from s4api.swagger import ApiClient
