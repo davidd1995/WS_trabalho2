@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
-from app.inferencerule import inferencerule
 from s4api.graphdb_api import GraphDBApi
 from s4api.swagger import ApiClient
 import json
 
 
-class riskstudent(inferencerule):
+class riskstudent():
     def __init__(self):
         self.baseEntity = "http://www.student-mat.com/entity/"
         self.baseProperty = "http://www.student-mat.com/pred/"
@@ -13,6 +12,8 @@ class riskstudent(inferencerule):
         self.repo_name = "trabalho2"
         self.client = ApiClient(endpoint=self.endpoint)
         self.accessor = GraphDBApi(self.client)
+
+
 
     def get_triples(self):
         query = """
@@ -35,5 +36,5 @@ class riskstudent(inferencerule):
             sub = result['s']['value'].replace(self.baseEntity, '')
             age = float(result['o']['value'])
             if(int(age) <18):
-                results += sub + ' risk ' + 'yes'+' .\n'
+                results += sub + ' risk ' + 'yes;'
         return results

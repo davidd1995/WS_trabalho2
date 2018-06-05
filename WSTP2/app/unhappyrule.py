@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
-from app.inferencerule import inferencerule
 from s4api.graphdb_api import GraphDBApi
 from s4api.swagger import ApiClient
 import json
 
 
-class Unhappyrule(inferencerule):
+class Unhappyrule():
     def __init__(self):
         self.baseEntity = "http://www.student-mat.com/entity/"
         self.baseProperty = "http://www.student-mat.com/pred/"
@@ -39,6 +38,6 @@ class Unhappyrule(inferencerule):
             goout = float(result['o']['value'])
             alc = float(result['al']['value'])
             if(int(goout) >2 and (int(alc)>1)):
-                results += sub + ' state ' + 'unhappy' + ' .\n'
+                results += sub + ' state ' + 'unhappy;'
         return results
 

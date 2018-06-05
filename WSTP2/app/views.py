@@ -135,43 +135,8 @@ def inferenciarisco(request):
     triples = rType.get_triples()
     print(triples)
     _sparql.add_inferences(triples)
-    for triple in triples.split('\n'):
-        triple = triple.split(' ')
-        if len(triple) >= 3:
-            triples_platform.append((triple[0], triple[1], triple[2]))
     context = {'triples': _sparql.list_all_triples()}
-    context.update({'triples': triples_platform})
     return HttpResponse(template.render(context, request))
-    '''query = """
-    PREFIX baseProperty: <http://www.student-mat.com/pred/>
-    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-    PREFIX baseStudent: <http://www.student-mat.com/class/>
-    PREFIX baseEntity: <http://www.student-mat.com/entity/>
-    PREFIX fb: <http://rdf.freebase.com/ns/>
-    CONSTRUCT {
-        ?s baseProperty:risk 'yes'.
-    }
-    WHERE {
-        ?s baseProperty:age ?o .
-        ?s baseProperty:famsup 'no' .
-        FILTER (?o<'18')
-    }
-       """
-
-    payload_query = {"query": query}
-
-    res = accessor.sparql_select(body=payload_query,
-                                 repo_name=repo_name)
-    print(res)
-    #res2 = json.loads(res)
-
-
-   # for e in res2['results']['bindings']:
-       # bindings.append((e['s']['value'], e['p']['value'], e['o']['value']))
-    return 0 # render(request, 'index.html', {'tuples': bindings})
-    #risk = riskstudent()
-    #graph.applyinference(risk)
-    #return render(request,'index.html',{'tuples':graph.query([('?a1','?b2','?c3')])})'''
 
 def inferenciainfeliz(request):
     template = loader.get_template('index.html')
@@ -179,12 +144,7 @@ def inferenciainfeliz(request):
     triples = rType.get_triples()
     print(triples)
     _sparql.add_inferences(triples)
-    for triple in triples.split('\n'):
-        triple = triple.split(' ')
-        if len(triple) >= 3:
-            triples_platform.append((triple[0], triple[1], triple[2]))
     context = {'triples': _sparql.list_all_triples()}
-    context.update({'triples': triples_platform})
     return HttpResponse(template.render(context, request))
 
 def inferenciarelacao(request):
@@ -192,10 +152,5 @@ def inferenciarelacao(request):
     rType = relationavailable()
     triples = rType.get_triples()
     _sparql.add_inferences(triples)
-    for triple in triples.split('\n'):
-        triple = triple.split(' ')
-        if len(triple) >= 3:
-            triples_platform.append((triple[0], triple[1], triple[2]))
     context = {'triples': _sparql.list_all_triples()}
-    context.update({'triples': triples_platform})
     return HttpResponse(template.render(context, request))

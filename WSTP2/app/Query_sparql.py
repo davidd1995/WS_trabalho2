@@ -111,19 +111,19 @@ class Query_sparl():
         return predicates
 
     def add_inferences(self, sub):
-        print("add inference")
-        for triple in sub.split('\n'):
-            triple = triple.split(' ')
-            if len(triple) >= 3:
-                print(triple[3])
-                update = """
-                     PREFIX pred: <http://www.student-mat.com/pred/>
-                     PREFIX entity: <http://www.student-mat.com/entity/>
-                     INSERT DATA
-                     {
-                       entity:""" + triple[0] + """ pred:""" + triple[1] + """ """ + triple[3] + """ .
-                     }
-                 """
-                payload_query = {"update": update}
-                res=self.accessor.sparql_update(body=payload_query, repo_name=self.repo_name)
-                print(res)
+        space=" "
+        for triple in sub.split(';'):
+            if(triple!=""):
+                triple = triple.split(' ')
+                if len(triple) == 3:
+                    update = """
+                         PREFIX pred: <http://www.student-mat.com/pred/>
+                         PREFIX entity: <http://www.student-mat.com/entity/>
+                         INSERT DATA
+                         {
+                           entity:""" + triple[0] + """ pred:""" + triple[1]+space+ """\""""+triple[2]+ """\"""" + """ . 
+                         }
+                    """
+                    payload_query = {"update": update}
+                    res=self.accessor.sparql_update(body=payload_query, repo_name=self.repo_name)
+                    print(res)

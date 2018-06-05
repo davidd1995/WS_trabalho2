@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
-from app.inferencerule import inferencerule
 from s4api.graphdb_api import GraphDBApi
 from s4api.swagger import ApiClient
 import json
 
-class relationavailable(inferencerule):
+class relationavailable():
     def __init__(self):
         self.baseEntity = "http://www.student-mat.com/entity/"
         self.baseProperty = "http://www.student-mat.com/pred/"
@@ -40,6 +39,6 @@ class relationavailable(inferencerule):
             sub = result['s']['value'].replace(self.baseEntity, '')
             sub2 = result['s2']['value'].replace(self.baseEntity, '')
             if(sub != sub2):
-                results += sub + ' available ' + sub2 + ' .\n'
+                results += sub + ' available ' + sub2 + ';'
         return results
 
