@@ -34,6 +34,10 @@ def indexpage(request):
 
 
 def sendinfo(request):
+    baseEntity = "http://www.student-mat.com/entity/"
+    baseProperty = "http://www.student-mat.com/pred/"
+
+
     provisoria=[]
     error = False
     c1 = request.POST['c1']
@@ -44,18 +48,131 @@ def sendinfo(request):
 
     x = str(c1).split(" ")
     query1 = []
+    space = " "
 
     for s in x:
         clauses=s[1:len(s)-1].split(",")
         query1.append((clauses[0],clauses[1],clauses[2]))
-    print(clauses[0], clauses[1], clauses[2])
-    if(clauses[0]=='?s' and clauses[2]=='?o'):
+    if (clauses[0]=='?s' and clauses[1]=='?p'):
+        query = """
+                    PREFIX pred: <http://www.student-mat.com/pred/>
+                    PREFIX entity: <http://www.student-mat.com/entity/>
+                    SELECT *
+                    WHERE{
+                        """ + clauses[0] + """ """ + clauses[1] + space + """\""""+clauses[2]+ """\"""" + """ .
+                    }
+                    """
+        payload_query = {"query": query}
+        res = accessor.sparql_select(body=payload_query,
+                                     repo_name=repo_name)
+        res = json.loads(res)
+
+        triples = []
+        for e in res['results']['bindings']:
+            sub = e['s']['value'].replace(baseEntity, '').title()
+            pred = e['p']['value'].replace(baseEntity, '').title()
+            provisoria.append((sub, pred, clauses[2]))
+
+    elif (clauses[2]=='?o' and clauses[1]=='?p'):
+        query = """
+                    PREFIX pred: <http://www.student-mat.com/pred/>
+                    PREFIX entity: <http://www.student-mat.com/entity/>
+                    SELECT *
+                    WHERE{
+                        entity:""" + clauses[0] + """ """ + clauses[1] + space + """ """ + clauses[2] + """ .
+                    }
+                    """
+        payload_query = {"query": query}
+        res = accessor.sparql_select(body=payload_query,
+                                     repo_name=repo_name)
+        res = json.loads(res)
+
+        triples = []
+        for e in res['results']['bindings']:
+            obj = e['o']['value'].replace(baseEntity, '').title()
+            pred = e['p']['value'].replace(baseEntity, '').title()
+            provisoria.append((clauses[0], pred, obj))
+
+    elif (clauses[0]=='?s' and clauses[2]=='?o'):
+        query = """
+                    PREFIX pred: <http://www.student-mat.com/pred/>
+                    PREFIX entity: <http://www.student-mat.com/entity/>
+                    SELECT *
+                    WHERE{
+                        """ + clauses[0] + """ pred:""" + clauses[1] + space + """ """ + clauses[2] + """ .
+                    }
+                    """
+        payload_query = {"query": query}
+        res = accessor.sparql_select(body=payload_query,
+                                     repo_name=repo_name)
+        res = json.loads(res)
+
+        triples = []
+        for e in res['results']['bindings']:
+            sub = e['s']['value'].replace(baseEntity, '').title()
+            obj = e['o']['value'].replace(baseEntity, '').title()
+            provisoria.append((sub, clauses[1], obj))
+    elif (clauses[0]=='?s'):
+        query = """
+                   PREFIX pred: <http://www.student-mat.com/pred/>
+                   PREFIX entity: <http://www.student-mat.com/entity/>
+                   SELECT *
+                   WHERE{
+                       """ + clauses[0] + """ pred: """ + clauses[1] + space + """\"""" + clauses[2] + """\"""" + """ .
+                   }
+                   """
+        payload_query = {"query": query}
+        res = accessor.sparql_select(body=payload_query,
+                                     repo_name=repo_name)
+        res = json.loads(res)
+
+        triples = []
+        for e in res['results']['bindings']:
+            sub = e['s']['value'].replace(baseEntity, '').title()
+            provisoria.append((sub, clauses[1], clauses[2]))
+    elif (clauses[1]=='?p'):
+        query = """
+                   PREFIX pred: <http://www.student-mat.com/pred/>
+                   PREFIX entity: <http://www.student-mat.com/entity/>
+                   SELECT *
+                   WHERE{
+                       entity:""" + clauses[0] + """ """ + clauses[1] + space + """\"""" + clauses[2] + """\"""" + """ .
+                   }
+                   """
+        payload_query = {"query": query}
+        res = accessor.sparql_select(body=payload_query,
+                                     repo_name=repo_name)
+        res = json.loads(res)
+
+        triples = []
+        for e in res['results']['bindings']:
+            pred = e['p']['value'].replace(baseEntity, '').title()
+            provisoria.append((clauses[0], pred, clauses[2]))
+    elif (clauses[2]=='?o'):
+        query = """
+                PREFIX pred: <http://www.student-mat.com/pred/>
+                PREFIX entity: <http://www.student-mat.com/entity/>
+                SELECT *
+                WHERE{
+                    entity:""" + clauses[0] + """ pred:""" + clauses[1] + space + """ """ + clauses[2] + """ .
+                }
+                """
+        payload_query = {"query": query}
+        res = accessor.sparql_select(body=payload_query,
+                                     repo_name=repo_name)
+        res = json.loads(res)
+
+        triples = []
+        for e in res['results']['bindings']:
+            obj = e['o']['value'].replace(baseEntity, '').title()
+            provisoria.append((clauses[0], clauses[1], obj))
+    else:
         query = """
             PREFIX pred: <http://www.student-mat.com/pred/>
             PREFIX entity: <http://www.student-mat.com/entity/>
             SELECT *
             WHERE{
-            """+clauses[0]+""" """+clauses[1]+""" """+clauses[2]+""".
+                """ + clauses[0] + """ """ + clauses[1]+space+ """ """+clauses[2]+ """ .
             }
             """
         payload_query = {"query": query}
@@ -63,11 +180,16 @@ def sendinfo(request):
                                      repo_name=repo_name)
         res = json.loads(res)
 
-        print(res)
+        triples = []
         for e in res['results']['bindings']:
-            provisoria.append((e['s']['value'],clauses[1], e['o']['value']))
-        print(provisoria)
-        return render(request, 'index.html', {'tuples': provisoria})
+            sub = e['s']['value'].replace(baseEntity, '').title()
+            pred = e['p']['value'].replace(baseEntity, '').title()
+            obj = e['o']['value'].replace(baseEntity, '').title()
+            provisoria.append((sub, pred, obj))
+
+    context = {'triples':provisoria}
+    template = loader.get_template('index.html')
+    return HttpResponse(template.render(context, request))
 
 def addtriple(request):
     print("entra")
