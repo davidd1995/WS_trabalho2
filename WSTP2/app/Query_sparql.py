@@ -1,7 +1,7 @@
 import json
 from s4api.graphdb_api import GraphDBApi
 from s4api.swagger import ApiClient
-
+import re
 
 class Query_sparl():
     def __init__(self):
@@ -18,19 +18,21 @@ class Query_sparl():
         SELECT *
         WHERE{
             ?s?p?o
-            Filter(isLiteral(?o))
+
 
         }
         """
         payload_query = {"query": query}
         res = self.accessor.sparql_select(body=payload_query, repo_name=self.repo_name)
         res = json.loads(res)
+        pattern = re.compile(".*http://www.student-mat.com/pred/.*")
         triples = []
         for e in res['results']['bindings']:
-            sub = e['s']['value'].replace(self.baseEntity, '').title()
-            pred = e['p']['value'].replace(self.baseProperty, '').title()
-            obj = e['o']['value'].replace(self.baseEntity, '').title()
-            triples.append((sub, pred, obj))
+            if pattern.match(str(e['p']['value'])):
+                sub = e['s']['value'].replace(self.baseEntity, '').title()
+                pred = e['p']['value'].replace(self.baseProperty, '').title()
+                obj = e['o']['value'].replace(self.baseEntity, '').title()
+                triples.append((sub, pred, obj))
         return triples
 
     def add_tosparl(self, sub, pred, obj):
@@ -38,16 +40,28 @@ class Query_sparl():
         sub = sub.lower().replace(' ', '')
         pred = pred.lower().replace(' ', '')
         obj = obj.lower().replace(' ', '')
-        update = """
-              PREFIX pred: <http://www.student-mat.com/pred/>
-              PREFIX entity: <http://www.student-mat.com/entity/>
-              INSERT DATA
-              {
-                entity:""" + sub + """ pred:""" + pred+""" """+ obj + """ .
-              }
-          """
-        payload_query = {"update": update}
-        self.accessor.sparql_update(body=payload_query, repo_name=self.repo_name)
+        if( pred == 'available'):
+            update = """
+                  PREFIX pred: <http://www.student-mat.com/pred/>
+                  PREFIX entity: <http://www.student-mat.com/entity/>
+                  INSERT DATA
+                  {
+                    entity:""" + sub + """ pred:""" + pred+""" entity:"""+ obj + """ .
+                  }
+              """
+            payload_query = {"update": update}
+            self.accessor.sparql_update(body=payload_query, repo_name=self.repo_name)
+        else:
+            update = """
+                  PREFIX pred: <http://www.student-mat.com/pred/>
+                  PREFIX entity: <http://www.student-mat.com/entity/>
+                  INSERT DATA
+                  {
+                    entity:""" + sub + """ pred:""" + pred+""" \""""+ obj + """\" .
+                  }
+              """
+            payload_query = {"update": update}
+            self.accessor.sparql_update(body=payload_query, repo_name=self.repo_name)
 
     def rm_tosparl(self, sub, pred, obj):
         before_remove = len(self.list_all_triples())
@@ -65,7 +79,7 @@ class Query_sparl():
         update = """
         DELETE DATA
            {
-               """ + sub + """ """ + pred + """ """ + obj + """ .
+               entity:""" + sub + """ pred:""" + pred + """ """ + obj + """ .
            }
         """
         payload_query = {"update": update}
@@ -115,7 +129,21 @@ class Query_sparl():
         for triple in sub.split(';'):
             if(triple!=""):
                 triple = triple.split(' ')
-                if len(triple) == 3:
+                if len(triple) == 3 and triple[1] == 'available':
+                    print("boupa3")
+                    update = """
+                                         PREFIX pred: <http://www.student-mat.com/pred/>
+                                         PREFIX entity: <http://www.student-mat.com/entity/>
+                                         INSERT DATA
+                                         {
+                                           entity:""" + triple[0] + """ pred:""" + triple[1] + space + """entity:"""+triple[2] + """ . 
+                                         }
+                                    """
+                    payload_query = {"update": update}
+                    res = self.accessor.sparql_update(body=payload_query, repo_name=self.repo_name)
+
+
+                elif len(triple) == 3:
                     update = """
                          PREFIX pred: <http://www.student-mat.com/pred/>
                          PREFIX entity: <http://www.student-mat.com/entity/>
