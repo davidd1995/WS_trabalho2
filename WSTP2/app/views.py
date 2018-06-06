@@ -19,8 +19,9 @@ bindings = []
 
 
 _sparql = Query_sparl()
-triples_platform = []
 
+baseEntity = "http://www.student-mat.com/entity/"
+baseProperty = "http://www.student-mat.com/pred/"
 
 def __init__(self):
     self._spo = []
@@ -28,7 +29,10 @@ def __init__(self):
 
 def indexpage(request):
     template = loader.get_template('index.html')
-    context = {'triples': _sparql.list_all_triples()}
+    tuples = _sparql.list_all_triples()
+    tuples = get_type(tuples)
+    tuples = get_triples(tuples)
+    context = {'tuples': tuples}
     return HttpResponse(template.render(context, request))
 
 
@@ -180,14 +184,16 @@ def sendinfo(request):
                                      repo_name=repo_name)
         res = json.loads(res)
 
-        triples = []
+
         for e in res['results']['bindings']:
             sub = e['s']['value'].replace(baseEntity, '').title()
             pred = e['p']['value'].replace(baseEntity, '').title()
             obj = e['o']['value'].replace(baseEntity, '').title()
             provisoria.append((sub, pred, obj))
 
-    context = {'triples':provisoria}
+    tuples = get_type(provisoria)
+    tuples = get_triples(provisoria)
+    context = {'tuples': tuples}
     template = loader.get_template('index.html')
     return HttpResponse(template.render(context, request))
 
@@ -212,7 +218,10 @@ def addtriple(request):
     else:
         context.update({'error': False})
     template = loader.get_template('index.html')
-    context = {'triples': _sparql.list_all_triples()}
+    tuples = _sparql.list_all_triples()
+    tuples = get_type(tuples)
+    tuples = get_triples(tuples)
+    context = {'tuples': tuples}
     return HttpResponse(template.render(context, request))
     #return render(request,'index.html',{'tuples':bindings,'erroradd':error})
 
@@ -238,7 +247,10 @@ def rmtriple(request):
     else:
         context = {'error': False}
     template = loader.get_template('index.html')
-    context = {'triples': _sparql.list_all_triples()}
+    tuples = _sparql.list_all_triples()
+    tuples = get_type(tuples)
+    tuples = get_triples(tuples)
+    context = {'tuples': tuples}
     return HttpResponse(template.render(context, request))
 
 
@@ -257,7 +269,10 @@ def inferenciarisco(request):
     triples = rType.get_triples()
     print(triples)
     _sparql.add_inferences(triples)
-    context = {'triples': _sparql.list_all_triples()}
+    tuples = _sparql.list_all_triples()
+    tuples = get_type(tuples)
+    tuples = get_triples(tuples)
+    context = {'tuples': tuples}
     return HttpResponse(template.render(context, request))
 
 def inferenciainfeliz(request):
@@ -266,7 +281,10 @@ def inferenciainfeliz(request):
     triples = rType.get_triples()
     print(triples)
     _sparql.add_inferences(triples)
-    context = {'triples': _sparql.list_all_triples()}
+    tuples = _sparql.list_all_triples()
+    tuples = get_type(tuples)
+    tuples = get_triples(tuples)
+    context = {'tuples': tuples}
     return HttpResponse(template.render(context, request))
 
 def inferenciarelacao(request):
@@ -274,5 +292,29 @@ def inferenciarelacao(request):
     rType = relationavailable()
     triples = rType.get_triples()
     _sparql.add_inferences(triples)
-    context = {'triples': _sparql.list_all_triples()}
+    tuples = _sparql.list_all_triples()
+    tuples = get_type(tuples)
+    tuples = get_triples(tuples)
+    context = {'tuples': tuples}
     return HttpResponse(template.render(context, request))
+
+def get_type(triples):
+    res = []
+    for sub, pred, obj in triples:
+        if baseEntity in obj:
+            res.append((sub, pred, obj, 'entity'))
+        else:
+            res.append((sub, pred, obj, 'literal'))
+    return res
+
+def get_triples(tuples):
+    res = []
+    for sub, pred, obj, obj_type in tuples:
+        sub_res = sub.replace(baseEntity, '').replace('_', ' ').title()
+        pred_res = pred.replace(baseProperty, '').replace('_', ' ').title()
+        if baseEntity in obj:
+            obj_res = obj.replace(baseEntity, '').replace('_', ' ').title()
+            res.append((sub_res, pred_res, obj_res, obj_type))
+        else:
+            res.append((sub_res, pred_res, obj, obj_type))
+    return res
