@@ -247,11 +247,11 @@ def downloadgraphvis(request):
     template = loader.get_template('index.html')
     dot=Graphviz.triples2dot(_sparql.list_all_triples())
     Graphviz.tracegraph(dot)
-    tuples = _sparql.list_all_triples()
-    tuples = get_type(tuples)
-    tuples = get_triples(tuples)
-    context = {'tuples': tuples}
-    return HttpResponse(template.render(context, request))
+    with open('dotout/relations.gv.pdf', 'rb') as pdf:
+        response = HttpResponse(pdf.read())
+        response['content_type'] = 'application/pdf'
+        response['Content-Disposition'] = 'attachment;filename=grafo.pdf'
+        return response
 
 
 def inferenciarisco(request):

@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
+from django.http import HttpResponse
 from graphviz import Source
 from app.staticvars.staticpaths import pathtocsv
 import re
-
-
 
 relations = []
 triples = []

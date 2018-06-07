@@ -122,10 +122,10 @@
                                       <tr>
                                             <td about="http://www.student-mat.com/entity/{{ sub }}">{{ sub }}</td>
                                             {% ifequal obj_type 'entity' %}
-                                                    <td rel="pred:{{ pred }}">{{ pred }}</td>
+                                                    <td rel="http://www.student-mat.com/pred/{{ pred }}">{{ pred }}</td>
                                                     <td about="http://www.student-mat.com/entity/{{ obj }}">{{ obj }}</td>
                                             {% else %}
-                                                    <td property="pred:{{ pred }}">{{ pred }}</td>
+                                                    <td property="http://www.student-mat.com/pred/{{ pred }}">{{ pred }}</td>
                                                     <td>{{ obj }}</td>
                                             {% endifequal %}
                                       </tr>
