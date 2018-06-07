@@ -95,7 +95,7 @@
                                 <div class="form-group">
                                     <label for="exampleInputEmail1">Insira clausulas</label>
 
-                                    <input type="text" name ="c1" class="form-control" placeholder="(?x,?y,?z) (?x,age,?z) ...">
+                                    <input type="text" name ="c1" class="form-control" placeholder="(sub,pred,obj)">
                                     {% if error %}
                                         <p style="color: red">Insira uma clausula válida</p>
                                     {% endif %}
@@ -120,10 +120,10 @@
                                 <tbody>
                                     {% for sub, pred, obj, obj_type in tuples %}
                                       <tr>
-                                            <td about="http://www.games.com/entity/{{ sub }}">{{ sub }}</td>
+                                            <td about="http://www.student-mat.com/entity/{{ sub }}">{{ sub }}</td>
                                             {% ifequal obj_type 'entity' %}
                                                     <td rel="pred:{{ pred }}">{{ pred }}</td>
-                                                    <td about="http://www.games.com/entity/{{ obj }}">{{ obj }}</td>
+                                                    <td about="http://www.student-mat.com/entity/{{ obj }}">{{ obj }}</td>
                                             {% else %}
                                                     <td property="pred:{{ pred }}">{{ pred }}</td>
                                                     <td>{{ obj }}</td>

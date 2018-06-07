@@ -64,28 +64,109 @@ class Query_sparl():
             self.accessor.sparql_update(body=payload_query, repo_name=self.repo_name)
 
     def rm_tosparl(self, sub, pred, obj):
-        before_remove = len(self.list_all_triples())
-        if sub is None:
-            sub = '?s'
+        if (str(sub) == '?s' and str(pred) == '?p'):
+            update = """
+                   PREFIX pred: <http://www.student-mat.com/pred/>
+                   PREFIX entity: <http://www.student-mat.com/entity/>
+                   DELETE
+                   {?s ?p ?o} 
+                   where
+                   {
+                       ?s ?p \"""" + obj + """\".
+                       ?s ?p ?o
+                   }
+               """
+            payload_query = {"update": update}
+            self.accessor.sparql_update(body=payload_query, repo_name=self.repo_name)
+        elif (str(obj) == '?o' and str(pred) == '?p'):
+            update = """
+                   PREFIX pred: <http://www.student-mat.com/pred/>
+                   PREFIX entity: <http://www.student-mat.com/entity/>
+                   DELETE
+                   {?s ?p ?o} 
+                   where
+                   {
+                       entity:""" + sub + """ ?p ?o.
+                       ?s ?p ?o
+                   }
+               """
+            payload_query = {"update": update}
+            self.accessor.sparql_update(body=payload_query, repo_name=self.repo_name)
+
+        elif (sub == '?s' and obj == '?o'):
+            update = """
+                   PREFIX pred: <http://www.student-mat.com/pred/>
+                   PREFIX entity: <http://www.student-mat.com/entity/>
+                   DELETE
+                   {?s ?p ?o} 
+                   where
+                   {
+                       ?s pred:""" + pred + """ ?o.
+                       ?s ?p ?o
+                   }
+               """
+            payload_query = {"update": update}
+            self.accessor.sparql_update(body=payload_query, repo_name=self.repo_name)
+
+        elif (str(sub) == '?s'):
+            update = """
+                   PREFIX pred: <http://www.student-mat.com/pred/>
+                   PREFIX entity: <http://www.student-mat.com/entity/>
+                   DELETE
+                   {?s ?p ?o} 
+                   where
+                   {
+                       ?s pred:""" + pred + """\"""" + obj + """\".
+                       ?s ?p ?o
+                   }
+               """
+            payload_query = {"update": update}
+            self.accessor.sparql_update(body=payload_query, repo_name=self.repo_name)
+
+        elif (str(pred) == '?p'):
+            update = """
+                   PREFIX pred: <http://www.student-mat.com/pred/>
+                   PREFIX entity: <http://www.student-mat.com/entity/>
+                   DELETE
+                   {?s ?p ?o} 
+                   where
+                   {
+                       entity:""" + sub + """ ?p \"""" + obj + """\".
+                       ?s ?p ?o
+                   }
+               """
+            payload_query = {"update": update}
+            self.accessor.sparql_update(body=payload_query, repo_name=self.repo_name)
+
+        elif (str(obj) == '?o'):
+
+            update = """
+                   PREFIX pred: <http://www.student-mat.com/pred/>
+                   PREFIX entity: <http://www.student-mat.com/entity/>
+                   DELETE
+                   {?s ?p ?o} 
+                   where
+                   {
+                       entity:""" + sub + """ pred:""" + pred + """ ?o .
+                       ?s ?p ?o
+                   }
+               """
+            payload_query = {"update": update}
+            self.accessor.sparql_update(body=payload_query, repo_name=self.repo_name)
+
         else:
-            sub = str('<' + self.baseEntity + sub + '>').lower().replace(' ', '')
-        if obj is None:
-            obj = '?o'
-        if pred is None:
-            pred = '?p'
-        else:
-            pred = str('<' + self.baseProperty + pred + '>').lower().replace(' ', '')
-        print(sub+" "+pred+" "+obj)
-        update = """
-        DELETE DATA
-           {
-               entity:""" + sub + """ pred:""" + pred + """ """ + obj + """ .
-           }
-        """
-        payload_query = {"update": update}
-        self.accessor.sparql_update(body=payload_query, repo_name=self.repo_name)
-        after_remove = len(self.list_all_triples())
-        return before_remove - after_remove
+            print("entra")
+            space=" "
+            update = """
+                   PREFIX pred: <http://www.student-mat.com/pred/>
+                   PREFIX entity: <http://www.student-mat.com/entity/>
+                   DELETE where
+                   {
+                     entity:""" + sub + """ pred:""" + pred+""" \""""+ obj + """\" .
+                   }
+               """
+            payload_query = {"update": update}
+            self.accessor.sparql_update(body=payload_query, repo_name=self.repo_name)
 
     def triple_already_exists(self, sub, pred, obj=None):
         sub = sub.lower().replace(' ', '_')
@@ -121,7 +202,6 @@ class Query_sparl():
         for sub, pred, obj in triples:
             if pred not in predicates:
                 predicates.append(pred)
-        print(predicates)
         return predicates
 
     def add_inferences(self, sub):
