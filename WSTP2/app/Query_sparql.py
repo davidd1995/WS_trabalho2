@@ -3,7 +3,7 @@ from s4api.graphdb_api import GraphDBApi
 from s4api.swagger import ApiClient
 import re
 
-class Query_sparl():
+class query_sparql():
     def __init__(self):
         self.baseEntity = "http://www.student-mat.com/entity/"
         self.baseProperty = "http://www.student-mat.com/pred/"
@@ -18,7 +18,6 @@ class Query_sparl():
         SELECT *
         WHERE{
             ?s?p?o
-
 
         }
         """
@@ -35,7 +34,7 @@ class Query_sparl():
                 triples.append((sub, pred, obj))
         return triples
 
-    def add_tosparl(self, sub, pred, obj):
+    def add_sparql(self, sub, pred, obj):
 
         sub = sub.lower().replace(' ', '')
         pred = pred.lower().replace(' ', '')
@@ -63,7 +62,7 @@ class Query_sparl():
             payload_query = {"update": update}
             self.accessor.sparql_update(body=payload_query, repo_name=self.repo_name)
 
-    def rm_tosparl(self, sub, pred, obj):
+    def rm_sparql(self, sub, pred, obj):
         if (str(sub) == '?s' and str(pred) == '?p'):
             update = """
                    PREFIX pred: <http://www.student-mat.com/pred/>
@@ -155,7 +154,7 @@ class Query_sparl():
             self.accessor.sparql_update(body=payload_query, repo_name=self.repo_name)
 
         else:
-            print("entra")
+
             space=" "
             update = """
                    PREFIX pred: <http://www.student-mat.com/pred/>
@@ -210,7 +209,7 @@ class Query_sparl():
             if(triple!=""):
                 triple = triple.split(' ')
                 if len(triple) == 3 and triple[1] == 'available':
-                    print("boupa3")
+
                     update = """
                                          PREFIX pred: <http://www.student-mat.com/pred/>
                                          PREFIX entity: <http://www.student-mat.com/entity/>
@@ -234,4 +233,4 @@ class Query_sparl():
                     """
                     payload_query = {"update": update}
                     res=self.accessor.sparql_update(body=payload_query, repo_name=self.repo_name)
-                    print(res)
+

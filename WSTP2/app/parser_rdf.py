@@ -1,7 +1,5 @@
 import csv
 
-
-
 Entity = "http://www.student-mat.com/entity/"
 Property = "http://www.student-mat.com/pred/"
 

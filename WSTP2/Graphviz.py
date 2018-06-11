@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
 from django.http import HttpResponse
 from graphviz import Source
-from app.staticvars.staticpaths import pathtocsv
 import re
 
 relations = []
 triples = []
-pathtocsv= pathtocsv
+
 class Graphviz():
     def triples2dot(triples):
         dot = \
@@ -15,7 +14,6 @@ class Graphviz():
             overlap = "scale"; 
             """
         for s, p, o in triples:
-            print(s+ " "+ p+" "+ o)
             dot = dot + ('%s -- %s [label=%s]\n' % (
                 re.sub('[^A-Za-z0-9]+', '', s), re.sub('[^A-Za-z0-9]+', '', o), re.sub('[^A-Za-z0-9]+', '', p)))
         dot = dot + "}"

@@ -67,7 +67,7 @@
         <div class="row">
             <div class="col-lg-10 mx-auto">
                 <h1 class="text-uppercase">
-                    <strong>Django Web App - Triplestore Interface </strong>
+                    <strong>Django Web App - GraphDB Interface </strong>
                 </h1>
                 <hr>
             </div>
@@ -221,9 +221,12 @@
                 {% csrf_token %}
                 <button id="button3" type="submit" class="btn btn-secondary center-block">Inferência Tinder</button>
             </form>
+            <form action="/inferenciaorientacao/" method="post">
+                {% csrf_token %}
+                <button id="button4" type="submit" class="btn btn-secondary center-block">Inferência Orientação</button>
+            </form>
         </div>
     </div>
-
 </section>
 
 

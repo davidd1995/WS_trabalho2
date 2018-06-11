@@ -14,7 +14,7 @@ class Unhappyrule():
         self.accessor = GraphDBApi(self.client)
 
     def get_triples(self):
-        print("unhappy")
+
         query = """
            PREFIX baseProperty: <http://www.student-mat.com/pred/>
            PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
@@ -31,7 +31,6 @@ class Unhappyrule():
         payload_query = {"query": query}
         res = self.accessor.sparql_select(body=payload_query, repo_name=self.repo_name)
         res = json.loads(res)
-        print(res)
         results = ""
         for result in res['results']['bindings']:
             sub = result['s']['value'].replace(self.baseEntity, '')

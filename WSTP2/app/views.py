@@ -3,14 +3,16 @@ from __future__ import unicode_literals
 from django.template import loader
 from django.http import HttpResponse
 from django.shortcuts import render
-from app.Query_sparql import Query_sparl
-from app.unhappyrule import Unhappyrule
-from app.relationavailablerule import relationavailable
-from app.riskstudentrule import riskstudent
+from app.OrientationQuery import orientation
+from app.Query_sparql import query_sparql
+from app.UnhappyQuery import Unhappyrule
+from app.TinderQuery import relationavailable
+from app.RiskstudentQuery import riskstudent
 from Graphviz import Graphviz
 import json
 from s4api.graphdb_api import GraphDBApi
 from s4api.swagger import ApiClient
+
 endpoint = "http://localhost:7200"
 repo_name = "trabalho2"
 client = ApiClient(endpoint=endpoint)
@@ -18,7 +20,7 @@ accessor = GraphDBApi(client)
 bindings = []
 
 
-_sparql = Query_sparl()
+_sparql = query_sparql()
 
 baseEntity = "http://www.student-mat.com/entity/"
 baseProperty = "http://www.student-mat.com/pred/"
@@ -197,20 +199,18 @@ def sendinfo(request):
     return HttpResponse(template.render(context, request))
 
 def addtriple(request):
-    print("entra")
+
     context = {'predicates': _sparql.get_all_predicates()}
     template = loader.get_template('index.html')
     if ('sub' and 'pred' and 'obj') in request.POST:
         sub = request.POST['sub']
         pred = request.POST['pred']
         obj = request.POST['obj']
-        print(sub+" "+ pred +" "+obj)
         if sub and pred and obj:
             if _sparql.triple_already_exists(sub, pred):
                 context.update({'error': True, 'message': 'Triple already exists'})
             else:
-                print("atualizou")
-                _sparql.add_tosparl(sub, pred, obj)
+                _sparql.add_sparql(sub, pred, obj)
                 context.update({'error': False, 'message': 'Triple successfully added'})
         else:
             context.update({'error': True, 'message': 'Fill all the fields'})
@@ -224,15 +224,13 @@ def addtriple(request):
     return HttpResponse(template.render(context, request))
 
 def rmtriple(request):
-    print("entra")
-
     template = loader.get_template('index.html')
     if ('sub' and 'pred' and 'obj') in request.POST:
         sub = request.POST['sub']
         pred = request.POST['pred']
         obj = request.POST['obj']
         if sub and pred and obj:
-            _sparql.rm_tosparl(sub,pred,obj)
+            _sparql.rm_sparql(sub, pred, obj)
     else:
         context = {'error': False}
     template = loader.get_template('index.html')
@@ -259,7 +257,6 @@ def inferenciarisco(request):
     template = loader.get_template('index.html')
     rType = riskstudent()
     triples = rType.get_triples()
-    print(triples)
     _sparql.add_inferences(triples)
     tuples = _sparql.list_all_triples()
     tuples = get_type(tuples)
@@ -271,7 +268,6 @@ def inferenciainfeliz(request):
     template = loader.get_template('index.html')
     rType = Unhappyrule()
     triples = rType.get_triples()
-    print(triples)
     _sparql.add_inferences(triples)
     tuples = _sparql.list_all_triples()
     tuples = get_type(tuples)
@@ -282,6 +278,17 @@ def inferenciainfeliz(request):
 def inferenciarelacao(request):
     template = loader.get_template('index.html')
     rType = relationavailable()
+    triples = rType.get_triples()
+    _sparql.add_inferences(triples)
+    tuples = _sparql.list_all_triples()
+    tuples = get_type(tuples)
+    tuples = get_triples(tuples)
+    context = {'tuples': tuples}
+    return HttpResponse(template.render(context, request))
+
+def inferenciaorientação(request):
+    template = loader.get_template('index.html')
+    rType = orientation()
     triples = rType.get_triples()
     _sparql.add_inferences(triples)
     tuples = _sparql.list_all_triples()

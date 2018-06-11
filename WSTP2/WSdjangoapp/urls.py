@@ -15,17 +15,18 @@ Including another URLconf
 """
 from django.conf.urls import url
 from django.contrib import admin
-from app.views import indexpage, sendinfo, addtriple, rmtriple, downloadgraphvis, inferenciarisco,inferenciarelacao,inferenciainfeliz
+from app.views import indexpage, sendinfo, addtriple, rmtriple, downloadgraphvis, inferenciarisco,inferenciarelacao,inferenciainfeliz,inferenciaorientação
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^downloadgraphvis',downloadgraphvis,name='downloadgraphvis'),
-    url(r'^index/',indexpage,name='index'),
+    #url(r'^index/',indexpage,name='index'),
     url(r'^sendinfo',sendinfo,name='sendinfo'),
     url(r'^addtriple',addtriple,name='addtriple'),
     url(r'^rmtriple',rmtriple,name='rmtriple'),
     url(r'^inferenciarisco', inferenciarisco, name='inferenciarisco'),
     url(r'^inferenciainfeliz', inferenciainfeliz, name='inferenciainfeliz'),
-    url(r'^inferenciarelacao', inferenciarelacao, name='inferenciarelacao')
-
+    url(r'^inferenciarelacao', inferenciarelacao, name='inferenciarelacao'),
+    url(r'^inferenciaorientacao', inferenciaorientação, name='inferenciaorientação'),
+    url(r'^', indexpage, name='index')
 ]
