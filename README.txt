@@ -1,5 +1,5 @@
 Este trabalho foi desenvolvido pelos alunos:
-Jorge Loureiro 
+Jorge Loureiro
 Gil Mesquita
 
 Para executar o projeto é necessário a instalação de:
